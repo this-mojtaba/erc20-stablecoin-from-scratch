@@ -1,0 +1,6 @@
+{
+  "wake.compiler.solc.remappings": [
+    "forge-std/=node_modules/forge-std/",
+    "hardhat/=node_modules/hardhat/"
+  ]
+}
