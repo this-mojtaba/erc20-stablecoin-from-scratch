@@ -1,5 +1,5 @@
 {
-  "name": "mUSDT",
+  "name": "erc20-stablecoin-from-scratch",
   "version": "1.0.0",
   "type": "module",
   "devDependencies": {
