@@ -19,4 +19,8 @@
 # Hardhat coverage reports
 /coverage
 
+# Vscode configs
 .vscode
+
+# Wake configs
+.wake

@@ -24,12 +24,12 @@ in production—pausing, mint/burn controls, blacklist enforcement, and hardened
 
 ## Stack
 
-| Layer        | Tech                                     | Notes                                              |
-| ------------ | ---------------------------------------- | -------------------------------------------------- |
-| Smart contract | Solidity ^0.8.0                        | Single contract: `contracts/MiniUSDT.sol`          |
-| Development  | Hardhat + TypeScript                     | Config lives in `hardhat.config.ts`                |
-| Testing      | node:test + Viem wallet clients          | See `test/MiniUSDT.ts`                             |
-| Tooling      | ESLint/TSConfig via the default Hardhat scaffold | Run scripts from `package.json`             |
+| Layer          | Tech                                             | Notes                                     |
+| -------------- | ------------------------------------------------ | ----------------------------------------- |
+| Smart contract | Solidity ^0.8.0                                  | Single contract: `contracts/MiniUSDT.sol` |
+| Development    | Hardhat + TypeScript                             | Config lives in `hardhat.config.ts`       |
+| Testing        | node:test + Viem wallet clients                  | See `test/MiniUSDT.ts`                    |
+| Tooling        | ESLint/TSConfig via the default Hardhat scaffold | Run scripts from `package.json`           |
 
 ## Project map
 
@@ -81,8 +81,8 @@ npx hardhat console --network localhost
 Inside the console you can do:
 
 ```js
-const MiniUSDT = await ethers.getContractFactory("MiniUSDT");
-const token = await MiniUSDT.deploy("MiniUSDT", "mUSDT", 1_000_000n);
+const MiniUSDT = await ethers.getContractFactory('MiniUSDT');
+const token = await MiniUSDT.deploy('MiniUSDT', 'mUSDT', 1_000_000n);
 await token.waitForDeployment();
 ```
 
