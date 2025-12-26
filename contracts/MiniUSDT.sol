@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/**
+ * @title MiniUSDT
+ * @notice Minimal USDT-style token with owner controls (pause, blacklist, mint/burn) for testing flows.
+ */
 contract MiniUSDT {
     // State variables
     string public name;
@@ -13,7 +17,7 @@ contract MiniUSDT {
     // Data stores
     mapping(address => uint256) private balances;
     mapping(address => mapping(address => uint256)) private allowances;
-    mapping(address => bool) private blackUsers;
+    mapping(address => bool) private blackUsers; // Users flagged here cannot interact until unblocked
 
     // All events
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -35,6 +39,7 @@ contract MiniUSDT {
     error OwnerOnly();
     error ContractHasPaused();
     error UserHasBlocked();
+    error AllowanceUnderflow();
 
     // Modifier checkers
     modifier nonZeroAddress(address from) {
@@ -66,6 +71,7 @@ contract MiniUSDT {
     }
 
     modifier checkBlackUser(address user) {
+        // Gate every sensitive method via the blacklist to neutralize compromised accounts
         if (blackUsers[user] == true) {
             revert UserHasBlocked();
         }
@@ -77,6 +83,7 @@ contract MiniUSDT {
         string memory _symbol,
         uint256 _totalSupply
     ) {
+        // Entire initial supply is given to the deployer to mirror how centralized issuers operate
         name = _name;
         symbol = _symbol;
         totalSupply = _totalSupply;
@@ -87,6 +94,7 @@ contract MiniUSDT {
     }
 
     // Owner methods
+    // Owner mints extra liquidity for testing scenarios; subject to blacklist & zero-value guards
     function mint(
         address minter,
         uint256 amount
@@ -147,6 +155,7 @@ contract MiniUSDT {
         return balances[user];
     }
 
+    // Standard ERC-20 style transfer gated by pause status and blacklist rules
     function transfer(
         address to,
         uint256 amount
@@ -188,6 +197,7 @@ contract MiniUSDT {
         return true;
     }
 
+    // Follow OpenZeppelin's defensive allowance pattern to avoid spend race conditions
     function increaseAllowance(
         address spender,
         uint256 amount
@@ -205,6 +215,7 @@ contract MiniUSDT {
         return true;
     }
 
+    // Mirrors OZ decreaseAllowance to let wallets step allowances down safely
     function decreaseAllowance(
         address spender,
         uint256 amount
@@ -217,6 +228,9 @@ contract MiniUSDT {
         nonZeroAmount(amount)
         returns (bool)
     {
+        uint256 current = allowances[msg.sender][spender];
+        if (amount > current) revert AllowanceUnderflow();
+
         allowances[msg.sender][spender] -= amount;
         emit Approval(msg.sender, spender, amount);
         return true;
@@ -235,6 +249,7 @@ contract MiniUSDT {
         return allowances[_owner][spender];
     }
 
+    // Spender-driven transfer obeying allowances plus the same pause/blacklist gates
     function transferFrom(
         address from,
         address to,
